@@ -1,0 +1,8 @@
+{
+    "name": "spring-angularjs",
+    "version": "0.0.1",
+    "devDependencies": {
+        "karma": "0.8.4",
+        "jshint": "1.1.0"
+    }
+}
