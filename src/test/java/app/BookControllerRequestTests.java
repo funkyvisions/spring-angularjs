@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -22,9 +23,11 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration("file:src/main/webapp/WEB-INF/api-servlet.xml")
+@SpringApplicationConfiguration(classes = Application.class)
 public class BookControllerRequestTests {
+
   private MockMvc mockMvc;
+  private int bookId;
 
   @SuppressWarnings("SpringJavaAutowiringInspection")
   @Autowired
@@ -36,20 +39,20 @@ public class BookControllerRequestTests {
   @Before
   public void setup() {
     this.mockMvc = webAppContextSetup(this.wac).build();
-    this.repository.save(new Book("Pro Spring", new Author("Rob", "Harrop")));
+    bookId = this.repository.save(new Book("Pro Spring", new Author("Rob", "Harrop"))).getId();
   }
 
   @Test
   public void listBooks() throws Exception {
     mockMvc.perform(get("/books"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].title").value("Pro Spring"))
-        .andExpect(jsonPath("$[0].author.firstName").value("Rob"));
+        .andExpect(jsonPath("$[(@.length-1)].title").value("Pro Spring"))
+        .andExpect(jsonPath("$[(@.length-1)].author.firstName").value("Rob"));
   }
 
   @Test
   public void getBook() throws Exception {
-    mockMvc.perform(get("/books/{id}", 1))
+    mockMvc.perform(get("/books/{id}", bookId))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title").value("Pro Spring"));
   }

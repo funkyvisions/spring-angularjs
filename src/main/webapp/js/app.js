@@ -1,6 +1,6 @@
 angular.module("sprang.services", ["ngResource", "ngRoute"]).
     factory('Book', function ($resource) {
-        var Book = $resource('/api/books/:bookId', {bookId: '@id'},
+        var Book = $resource('/books/:bookId', {bookId: '@id'},
             {update: {method: 'PUT'}});
         Book.prototype.isNew = function(){
             return (typeof(this.id) === 'undefined');
